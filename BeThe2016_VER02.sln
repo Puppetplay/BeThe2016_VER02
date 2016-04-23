@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeThe2016_VER02", "BeThe2016_VER02\BeThe2016_VER02.csproj", "{6C1ED725-4042-43EB-8682-F8ADE649D675}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeThe", "BeThe\BeThe.csproj", "{ECF28EA8-B7C8-4E08-8F8D-AE93CD239969}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6C1ED725-4042-43EB-8682-F8ADE649D675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C1ED725-4042-43EB-8682-F8ADE649D675}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C1ED725-4042-43EB-8682-F8ADE649D675}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C1ED725-4042-43EB-8682-F8ADE649D675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECF28EA8-B7C8-4E08-8F8D-AE93CD239969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECF28EA8-B7C8-4E08-8F8D-AE93CD239969}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECF28EA8-B7C8-4E08-8F8D-AE93CD239969}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECF28EA8-B7C8-4E08-8F8D-AE93CD239969}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
