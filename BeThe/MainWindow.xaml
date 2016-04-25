@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BeThe"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="235.805">
     <Grid>
-        
+        <Button x:Name="bt_Player_W" Content="Player_W" Margin="10,10,10,0" VerticalAlignment="Top" Click="bt_Player_W_Click" />
+        <Button x:Name="bt_Shedule_W" Content="Shcedule_W" Margin="10,35,10,0" VerticalAlignment="Top" Click="bt_Shedule_W_Click"/>
     </Grid>
 </Window>

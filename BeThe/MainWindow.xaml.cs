@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BeThe.Util;
+using BeThe.Worker;
 
 namespace BeThe
 {
@@ -23,6 +25,26 @@ namespace BeThe
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        // 작업실행
+        private async void Run(WorkType workType)
+        {
+            Manager mgr = new Manager();
+            await mgr.Run(workType);
+            MessageBox.Show("1");
+        }
+
+        // Player_W 가져오기
+        private void bt_Player_W_Click(object sender, RoutedEventArgs e)
+        {
+            Run(WorkType.Player_W);
+        }
+
+        // Schedule_W 가져오기
+        private void bt_Shedule_W_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
