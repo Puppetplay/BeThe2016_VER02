@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using BeThe.Item;
 
-namespace BeThe.Crawler.Parser
+namespace BeThe.Crawler
 {
     internal class ParserPlayer_W : ParserBase
     {

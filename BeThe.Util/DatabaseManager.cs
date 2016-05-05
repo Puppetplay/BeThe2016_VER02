@@ -8,6 +8,7 @@ using System.Data.Linq;
 using System.Data.SqlClient;
 using System.Linq;
 using BeThe.Item;
+using System.Net;
 
 namespace BeThe.Util
 {
@@ -15,7 +16,8 @@ namespace BeThe.Util
     {
         MyHouse,
         Company,
-        SkyCenter
+        SkyCenter,
+        Server
     }
 
     public class DatabaseManager
@@ -36,7 +38,7 @@ namespace BeThe.Util
         public DatabaseManager()
         {
             //  데이터 베이스 컨텍스트를 생성자에서 하나 생성한다.
-            SetDatabaseInfo(DatabaseInfo.MyHouse);
+            SetDatabaseInfo(GetDatabaseInfo());
             var connection = new SqlConnection(GetConnString());
             DataContext = new DataContext(connection);
 
@@ -58,19 +60,23 @@ namespace BeThe.Util
         // 데이터 저장
         public void Save<T>(IEnumerable<T> items) where T : DbItemBase
         {
-            var table = DataContext.GetTable(typeof(T));
-            Int32 count = 0;
-            foreach (DbItemBase item in items)
+            if (items.Count() > 0)
             {
-                count++;
-                table.InsertOnSubmit(item);
-                if (count > 200)
+                Type type = items.First().GetType();
+                var table = DataContext.GetTable(type);
+                Int32 count = 0;
+                foreach (DbItemBase item in items)
                 {
-                    count = 0;
-                    DataContext.SubmitChanges();
+                    count++;
+                    table.InsertOnSubmit(item);
+                    if (count > 200)
+                    {
+                        count = 0;
+                        DataContext.SubmitChanges();
+                    }
                 }
+                DataContext.SubmitChanges();
             }
-            DataContext.SubmitChanges();
         }
 
         #endregion
@@ -92,10 +98,39 @@ namespace BeThe.Util
             if (databaseInfo == DatabaseInfo.MyHouse)
             {
                 DATA_SOURCE = "MIN-PC";
-                USER_ID = String.Empty;
-                PASSWORD = String.Empty;
+                USER_ID = "sa";
+                PASSWORD = "1";
                 CATALOG = "BETHE2016_VER02";
             }
+            else if(databaseInfo == DatabaseInfo.Server)
+            {
+                DATA_SOURCE = "61.73.185.162,3915";
+                USER_ID = "sa";
+                PASSWORD = "@1014vkfl";
+                CATALOG = "BETHE2016_VER02";
+            }
+        }
+
+        private DatabaseInfo GetDatabaseInfo()
+        {
+            String strHostName = string.Empty;
+            strHostName = Dns.GetHostName();
+            Console.WriteLine("Local Machine's Host Name: " + strHostName);
+            // Then using host name, get the IP address list..
+            IPHostEntry ipEntry = Dns.GetHostEntry(strHostName);
+            IPAddress[] addrs = ipEntry.AddressList;
+            foreach(var addr in addrs)
+            {
+                if(addr.ToString() == "192.168.1.100")
+                {
+                    return DatabaseInfo.MyHouse;
+                }
+                if (addr.ToString() == "61.73.185.162")
+                {
+                    return DatabaseInfo.Server;
+                }
+            }
+            throw new Exception("아이피 매칭실패");
         }
         #endregion
     }

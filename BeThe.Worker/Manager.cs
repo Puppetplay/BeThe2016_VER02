@@ -3,11 +3,9 @@
 //
 
 using BeThe.Item;
+using BeThe.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BeThe.Worker
@@ -19,8 +17,7 @@ namespace BeThe.Worker
         // Player_W 얻어오기
         public async Task Run(WorkType workType)
         {
-            Task task = new Task(CreateAction());
-            task.Start();
+            var task = CreateTask(workType);
             await task;
         }                
 
@@ -28,29 +25,58 @@ namespace BeThe.Worker
 
         #region Private Functions
 
-        // 각 작업타입의 액션을 생성한다.
-        private List<DbItemBase> CreateAction(WorkType workType)
+        // Task 를 생성한다.
+        public Task CreateTask(WorkType workType)
         {
-            var CrawlerMgr = new Crawler.Manager();
+            var task = Task.Factory.StartNew(() => DoWork(workType));
+            return task;
+        }
+
+        // 작업을한다.
+        private void DoWork(WorkType workType)
+        {
+            // 웹 크롤링하기
+            var items = Select(workType);
+
+            // 데이터 저장하기
+            Save(workType, items);
+        }
+
+        // 데이터 크롤링하기
+        private List<DbItemBase> Select(WorkType workType)
+        {
             List<DbItemBase> items = null;
+            var CrawlerMgr = new Crawler.Manager();
             if (workType == WorkType.Player_W)
             {
                 items = CrawlerMgr.GetPlayer_W();
             }
-
+            else if(workType == WorkType.Player)
+            {
+                items = CrawlerMgr.GetPlayer();
+            }
             return items;
         }
 
-        private Action CreateAction()
+        // 데이터 저장하기
+        private void Save(WorkType workType, List<DbItemBase> items)
         {
-            var action = new Action(AA);
-            return action;
+            if(items == null) { return; }
+
+            DatabaseManager dbMgr = new DatabaseManager();
+
+            if(workType == WorkType.Player_W)
+            {
+                dbMgr.DataContext.ExecuteCommand("TRUNCATE TABLE Player_W");
+            }
+            else if(workType == WorkType.Player)
+            {
+                dbMgr.DataContext.ExecuteCommand("TRUNCATE TABLE Player");
+            }
+
+            dbMgr.Save(items);
         }
 
-        private void AA()
-        {
-            Console.WriteLine("AA");
-        }
         #endregion
     }
 }

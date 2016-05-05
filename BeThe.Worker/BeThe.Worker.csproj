@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,7 +43,6 @@
   <ItemGroup>
     <Compile Include="Manager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskBase.cs" />
     <Compile Include="WorkType.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -53,6 +53,10 @@
     <ProjectReference Include="..\BeThe.Item\BeThe.Item.csproj">
       <Project>{ff158b8b-7ebe-4556-b7fe-4eb783e824b3}</Project>
       <Name>BeThe.Item</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BeThe.Util\BeThe.Util.csproj">
+      <Project>{80f639a3-96d5-48a5-9680-ee578b24caa5}</Project>
+      <Name>BeThe.Util</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

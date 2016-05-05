@@ -25,8 +25,7 @@ namespace BeThe.Crawler
         // Player_W 정보 얻기
         public List<DbItemBase> GetPlayer_W()
         {
-            ChromeDriver chromeDriver = null;
-            InitCromeDriver(chromeDriver);
+            ChromeDriver chromeDriver = InitCromeDriver();
             List<DbItemBase> players = new List<DbItemBase>();
             try
             {
@@ -49,11 +48,11 @@ namespace BeThe.Crawler
                             String html = crawler.GetHTML();
                             if (html != null)
                             {
-                                List<Player_W> ps = Parser.ParserPlayer_W.Instance.Parse(html, teamInitial);
+                                List<Player_W> ps = ParserPlayer_W.Instance.Parse(html, teamInitial);
                                 players = players.Concat(ps).ToList();
                             }
                         }
-                        catch
+                        catch(Exception e)
                         {
                             i--;
                             continue;
@@ -70,20 +69,57 @@ namespace BeThe.Crawler
 
         #endregion
 
+        #region Player
+
+        // Player정보 얻기
+        public List<DbItemBase> GetPlayer()
+        {
+            ChromeDriver chromeDriver = InitCromeDriver();
+            List<DbItemBase> players = new List<DbItemBase>();
+            try
+            {
+                CrawlerPlayer crawler = new CrawlerPlayer(chromeDriver);
+                DatabaseManager dbMgr = new DatabaseManager();
+                var player_Ws = dbMgr.SelectAll<Player_W>();
+                foreach (var player_W in player_Ws)
+                {
+                    try
+                    {
+                        crawler.Init(player_W.Href);
+                        String html = crawler.GetHTML();
+                        String[] items = player_W.Href.Split(new String[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
+                        Int32 playerId = Convert.ToInt32(items[items.Length - 1]);
+                        var player = ParserPlayer.Instance.Parse(html, player_W.Team, playerId);
+                        players.Add(player);
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+            finally
+            {
+                DisposeDriver(chromeDriver);
+            }
+            return players;
+        }
+
+        #endregion
+
         #endregion
 
         #region Private Functions
 
-        private void InitCromeDriver(ChromeDriver chromeDriver)
+        private ChromeDriver InitCromeDriver()
         {
-            if (chromeDriver == null)
-            {
-                var chromeDriverService = ChromeDriverService.CreateDefaultService();
-                var chromeOptions = new ChromeOptions();
-                chromeDriverService.HideCommandPromptWindow = true;
-                chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
-                chromeDriver.Manage().Window.Size = new Size(500, 800);
-            }
+
+            var chromeDriverService = ChromeDriverService.CreateDefaultService();
+            var chromeOptions = new ChromeOptions();
+            chromeDriverService.HideCommandPromptWindow = true;
+            var chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
+            chromeDriver.Manage().Window.Size = new Size(500, 800);
+            return chromeDriver;
         }
 
         private void DisposeDriver(ChromeDriver chromeDriver)

@@ -51,9 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Clawler\CrawlerBase.cs" />
+    <Compile Include="Clawler\CrawlerPlayer.cs" />
     <Compile Include="Clawler\CrawlerPlayer_W.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Parser\ParserBase.cs" />
+    <Compile Include="Parser\ParserPlayer.cs" />
     <Compile Include="Parser\ParserPlayer_W.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

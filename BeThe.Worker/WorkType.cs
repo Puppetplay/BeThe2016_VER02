@@ -9,6 +9,7 @@ namespace BeThe.Worker
     public enum WorkType
     {
         None,
-        Player_W
+        Player_W,
+        Player,
     }
 }

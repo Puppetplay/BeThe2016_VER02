@@ -30,9 +30,16 @@ namespace BeThe
         // 작업실행
         private async void Run(WorkType workType)
         {
-            Manager mgr = new Manager();
-            await mgr.Run(workType);
-            MessageBox.Show("1");
+            mainGrid.IsEnabled = false;
+            try
+            {
+                Manager mgr = new Manager();
+                await mgr.Run(workType);
+            }
+            finally
+            {
+                mainGrid.IsEnabled = true;
+            }
         }
 
         // Player_W 가져오기
@@ -44,7 +51,7 @@ namespace BeThe
         // Schedule_W 가져오기
         private void bt_Shedule_W_Click(object sender, RoutedEventArgs e)
         {
-
+            Run(WorkType.Player);
         }
     }
 }

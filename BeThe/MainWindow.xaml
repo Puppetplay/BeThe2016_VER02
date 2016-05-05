@@ -7,7 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="235.805">
     <Grid>
-        <Button x:Name="bt_Player_W" Content="Player_W" Margin="10,10,10,0" VerticalAlignment="Top" Click="bt_Player_W_Click" />
-        <Button x:Name="bt_Shedule_W" Content="Shcedule_W" Margin="10,35,10,0" VerticalAlignment="Top" Click="bt_Shedule_W_Click"/>
+        <Grid x:Name="mainGrid" Margin="10">
+            <Button x:Name="bt_Player_W" Content="Player_W" Margin="10,10,10,0" VerticalAlignment="Top" Click="bt_Player_W_Click" />
+            <Button x:Name="bt_Shedule_W" Content="Shcedule_W" Margin="10,60,10,0" VerticalAlignment="Top" Click="bt_Shedule_W_Click"/>
+            <Button x:Name="bt_Player" Content="Player" Margin="10,35,10,0" VerticalAlignment="Top" Click="bt_Shedule_W_Click"/>
+        </Grid>
     </Grid>
 </Window>
