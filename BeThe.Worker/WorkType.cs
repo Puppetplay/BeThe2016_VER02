@@ -11,5 +11,8 @@ namespace BeThe.Worker
         None,
         Player_W,
         Player,
+        Schedule,
+        Situation,
+        BoxScore
     }
 }

@@ -36,6 +36,10 @@ namespace BeThe
                 Manager mgr = new Manager();
                 await mgr.Run(workType);
             }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.ToString());
+            }
             finally
             {
                 mainGrid.IsEnabled = true;
@@ -48,10 +52,27 @@ namespace BeThe
             Run(WorkType.Player_W);
         }
 
-        // Schedule_W 가져오기
-        private void bt_Shedule_W_Click(object sender, RoutedEventArgs e)
+        // Player가져오기
+        private void bt_Player_Click(object sender, RoutedEventArgs e)
         {
             Run(WorkType.Player);
+        }
+
+        // Schedule 가져오기
+        private void bt_Schedule_Click(object sender, RoutedEventArgs e)
+        {
+            Run(WorkType.Schedule);
+        }
+
+        // Situatoin 가져오기
+        private void bt_Situatoin_Click(object sender, RoutedEventArgs e)
+        {
+            Run(WorkType.Situation);
+        }
+
+        private void bt_BoxScore_Click(object sender, RoutedEventArgs e)
+        {
+            Run(WorkType.BoxScore);
         }
     }
 }

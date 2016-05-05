@@ -1,24 +1,25 @@
 ﻿//
-// Player 크롤러
+// BoxScore 크롤러
 //
 
 using System;
 using OpenQA.Selenium.Chrome;
+using BeThe.Item;
 
 namespace BeThe.Crawler
 {
-    internal class CrawlerPlayer : CrawlerBase
+    internal class CrawlerBoxScore : CrawlerBase
     {
         #region Property & Values
 
-        private readonly String URL = "http://www.koreabaseball.com";
-        private String address;
+        private Schedule itemSchedule;
 
+        private readonly String URL = "http://sports.news.naver.com/gameCenter/gameRecord.nhn?gameId={0}&category=kbo";
         #endregion
 
         #region Constructor
 
-        public CrawlerPlayer(ChromeDriver chromeDriver)
+        public CrawlerBoxScore(ChromeDriver chromeDriver)
             : base(chromeDriver)
         {
 
@@ -28,14 +29,14 @@ namespace BeThe.Crawler
 
         #region public Functions
 
-        public void Init(String href)
+        public void Init(Schedule schedule)
         {
-            address = (URL + href);
+            itemSchedule = schedule;
         }
 
         public override String GetHTML()
         {
-            driver.Navigate().GoToUrl(address);
+            driver.Navigate().GoToUrl(String.Format(URL, itemSchedule.GameId));
             Sleep(1000);
             try
             {

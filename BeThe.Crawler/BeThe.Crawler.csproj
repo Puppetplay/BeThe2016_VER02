@@ -52,12 +52,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Clawler\CrawlerBase.cs" />
+    <Compile Include="Clawler\CrawlerBoxScore.cs" />
     <Compile Include="Clawler\CrawlerPlayer.cs" />
     <Compile Include="Clawler\CrawlerPlayer_W.cs" />
+    <Compile Include="Clawler\CrawlerSchedule.cs" />
+    <Compile Include="Clawler\CrawlerSituation.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="Parser\ParserBase.cs" />
+    <Compile Include="Parser\ParserBoxScore.cs" />
     <Compile Include="Parser\ParserPlayer.cs" />
     <Compile Include="Parser\ParserPlayer_W.cs" />
+    <Compile Include="Parser\ParserShedule.cs" />
+    <Compile Include="Parser\ParserSituation_W.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

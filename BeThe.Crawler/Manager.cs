@@ -9,12 +9,15 @@ using BeThe.Item;
 using System.Drawing;
 using BeThe.Util;
 using System.Linq;
+using System.Threading;
 
 namespace BeThe.Crawler
 {
-    public class Manager
+    public class Manager : IDisposable
     {
         #region Property & Values
+
+        private ChromeDriver chromeDriver;
 
         #endregion
 
@@ -23,46 +26,44 @@ namespace BeThe.Crawler
         #region Player_W
 
         // Player_W 정보 얻기
-        public List<DbItemBase> GetPlayer_W()
+        public List<DbItemBase> GetPlayer_W(String team)
         {
-            ChromeDriver chromeDriver = InitCromeDriver();
+            chromeDriver = InitCromeDriver();
             List<DbItemBase> players = new List<DbItemBase>();
-            try
+            String teamName = team;
+            String teamInitial = Util.Util.GetTeamInitialFromName(teamName);
+
+            if (teamName.ToUpper() == "KT")
             {
-                foreach (var team in Util.Util.Teams)
-                {
-                    String teamName = team;
-                    String teamInitial = Util.Util.GetTeamInitialFromName(teamName);
-
-                    if (teamName.ToUpper() == "KT")
-                    {
-                        teamName = "kt";
-                    }
-
-                    for (Int32 i = 1; i < 7; ++i)
-                    {
-                        try
-                        {
-                            CrawlerPlayer_W crawler = new CrawlerPlayer_W(chromeDriver);
-                            crawler.Init(teamName, i);
-                            String html = crawler.GetHTML();
-                            if (html != null)
-                            {
-                                List<Player_W> ps = ParserPlayer_W.Instance.Parse(html, teamInitial);
-                                players = players.Concat(ps).ToList();
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            i--;
-                            continue;
-                        }
-                    }
-                }
+                teamName = "kt";
             }
-            finally
+
+            Int32 errorCount = 0;
+            for (Int32 i = 1; i < 7; ++i)
             {
-                DisposeDriver(chromeDriver);
+                try
+                {
+                    CrawlerPlayer_W crawler = new CrawlerPlayer_W(chromeDriver);
+                    crawler.Init(teamName, i);
+                    String html = crawler.GetHTML();
+                    if (html != null)
+                    {
+                        List<Player_W> ps = ParserPlayer_W.Instance.Parse(html, teamInitial);
+                        players = players.Concat(ps).ToList();
+                    }
+                    errorCount = 0;
+                }
+                catch (Exception exception)
+                {
+                    Thread.Sleep(1000);
+                    i--;
+                    errorCount++;
+                    if (errorCount > 5)
+                    {
+                        throw exception;
+                    }
+                    continue;
+                }
             }
             return players;
         }
@@ -72,37 +73,129 @@ namespace BeThe.Crawler
         #region Player
 
         // Player정보 얻기
-        public List<DbItemBase> GetPlayer()
+        public DbItemBase GetPlayer(Player_W player_W)
         {
-            ChromeDriver chromeDriver = InitCromeDriver();
-            List<DbItemBase> players = new List<DbItemBase>();
-            try
+            Int32 errorCount = 0;
+            while (true)
             {
-                CrawlerPlayer crawler = new CrawlerPlayer(chromeDriver);
-                DatabaseManager dbMgr = new DatabaseManager();
-                var player_Ws = dbMgr.SelectAll<Player_W>();
-                foreach (var player_W in player_Ws)
+                try
                 {
-                    try
+                    chromeDriver = InitCromeDriver();
+                    CrawlerPlayer crawler = new CrawlerPlayer(chromeDriver);
+                    crawler.Init(player_W.Href);
+                    String html = crawler.GetHTML();
+                    String[] items = player_W.Href.Split(new String[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
+                    Int32 playerId = Convert.ToInt32(items[items.Length - 1]);
+                    DbItemBase player = ParserPlayer.Instance.Parse(html, player_W.Team, playerId);
+                    return player;
+                }
+                catch (Exception e)
+                {
+                    errorCount++;
+                    if (errorCount > 5)
                     {
-                        crawler.Init(player_W.Href);
-                        String html = crawler.GetHTML();
-                        String[] items = player_W.Href.Split(new String[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
-                        Int32 playerId = Convert.ToInt32(items[items.Length - 1]);
-                        var player = ParserPlayer.Instance.Parse(html, player_W.Team, playerId);
-                        players.Add(player);
-                    }
-                    catch
-                    {
-
+                        throw e;
                     }
                 }
             }
-            finally
+        }
+
+        #endregion
+
+        #region Schedule
+
+        // Schedule 정보 얻기
+        public List<DbItemBase> GetSchedule(Int32 year, Int32 month)
+        {
+            Int32 errorCount = 0;
+            while (true)
             {
-                DisposeDriver(chromeDriver);
+                try
+                {
+                    List<DbItemBase> schedules = new List<DbItemBase>();
+                    chromeDriver = InitCromeDriver();
+                    CrawlerSchedule crawler = new CrawlerSchedule(chromeDriver);
+                    crawler.Init(year, month);
+                    String html = crawler.GetHTML();
+                    var tSchedules = ParserShedule.Instance.Parse(html, year, month);
+                    schedules = schedules.Concat(tSchedules).ToList();
+                    return schedules;
+                }
+                catch(Exception e)
+                {
+                    errorCount++;
+                    if(errorCount > 5)
+                    {
+                        throw e;
+                    }
+                }
             }
-            return players;
+        }
+
+        #endregion
+
+        #region Situation
+
+        // Situation 정보 얻기
+        public DbItemBase GetSituation(Schedule schedule)
+        {
+            Int32 errorCount = 0;
+            while (true)
+            {
+                try
+                {
+                    List<DbItemBase> schedules = new List<DbItemBase>();
+                    chromeDriver = InitCromeDriver();
+
+                    CrawlerSituation crawler = new CrawlerSituation(chromeDriver);
+                    crawler.Init(schedule);
+                    String html = crawler.GetHTML();
+                    DbItemBase situation = ParserSituation_W.Instance.Parse(schedule, html);
+                    return situation;
+
+                }
+                catch (Exception)
+                {
+                    errorCount++;
+                    if (errorCount > 5)
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Situation
+
+        // Situation 정보 얻기
+        public DbItemBase GetBoxScore(Schedule schedule)
+        {
+            Int32 errorCount = 0;
+            while (true)
+            {
+                try
+                {
+                    List<DbItemBase> schedules = new List<DbItemBase>();
+                    chromeDriver = InitCromeDriver();
+
+                    CrawlerBoxScore crawler = new CrawlerBoxScore(chromeDriver);
+                    crawler.Init(schedule);
+                    String html = crawler.GetHTML();
+                    DbItemBase boxScore = ParserBoxScore_W.Instance.Parse(schedule, html);
+                    return boxScore;
+
+                }
+                catch (Exception)
+                {
+                    errorCount++;
+                    if (errorCount > 5)
+                    {
+                        return null;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -113,12 +206,27 @@ namespace BeThe.Crawler
 
         private ChromeDriver InitCromeDriver()
         {
-
-            var chromeDriverService = ChromeDriverService.CreateDefaultService();
-            var chromeOptions = new ChromeOptions();
-            chromeDriverService.HideCommandPromptWindow = true;
-            var chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
-            chromeDriver.Manage().Window.Size = new Size(500, 800);
+            if (chromeDriver == null)
+            {
+                while (true)
+                {
+                    try
+                    {
+                        DisposeDriver(chromeDriver);
+                        var chromeDriverService = ChromeDriverService.CreateDefaultService();
+                        var chromeOptions = new ChromeOptions();
+                        chromeDriverService.HideCommandPromptWindow = true;
+                        var driver = new ChromeDriver(chromeDriverService, chromeOptions);
+                        Thread.Sleep(1000);
+                        driver.Manage().Window.Size = new Size(500, 800);
+                        return driver;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+            }
             return chromeDriver;
         }
 
@@ -130,6 +238,12 @@ namespace BeThe.Crawler
                 chromeDriver = null;
             }
         }
+
+        public void Dispose()
+        {
+            DisposeDriver(chromeDriver);
+        }
+
         #endregion
     }
 }

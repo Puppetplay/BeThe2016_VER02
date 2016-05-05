@@ -43,7 +43,7 @@ namespace BeThe.Crawler
         {
             driver.Navigate().GoToUrl(URL);
             SetComboBox("cphContainer_cphContents_ddlTeam", teamInitial);
-            Sleep(2000);
+            Sleep(3000);
             if (page > 5)
             {
                 if (IsExistElement("cphContainer_cphContents_ucPager_btnNext"))
@@ -62,7 +62,7 @@ namespace BeThe.Crawler
             if (IsExistElement(id))
             {
                 ClickButton(id);
-                Sleep(2000);
+                Sleep(3000);
                 return driver.FindElementByXPath("//tbody").GetAttribute("outerHTML");
             }
             else

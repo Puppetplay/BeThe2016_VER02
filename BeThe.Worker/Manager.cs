@@ -7,6 +7,7 @@ using BeThe.Util;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace BeThe.Worker
 {
@@ -14,69 +15,374 @@ namespace BeThe.Worker
     {
         #region Public Functions
 
-        // Player_W 얻어오기
+        private readonly Int32 workCount = 10;
+        #endregion
+
+        #region Public Functions
+
+        // Run 모든요청은 이함수로 받는다.
         public async Task Run(WorkType workType)
         {
-            var task = CreateTask(workType);
-            await task;
+            var tasks = CreateTaskTasks(workType);
+            if(tasks == null)
+            {
+                return;
+            }
+
+            foreach(var task in tasks)
+            {
+                await task;
+            }
         }                
+
+        // 테스트함수
+        public void RunTest()
+        {
+            using (var crawlerMgr = new Crawler.Manager())
+            {
+                var temp = crawlerMgr.GetPlayer_W("삼성");
+            }
+        }
 
         #endregion
 
         #region Private Functions
 
         // Task 를 생성한다.
-        public Task CreateTask(WorkType workType)
+        private List<Task> CreateTaskTasks(WorkType workType)
         {
-            var task = Task.Factory.StartNew(() => DoWork(workType));
-            return task;
-        }
-
-        // 작업을한다.
-        private void DoWork(WorkType workType)
-        {
-            // 웹 크롤링하기
-            var items = Select(workType);
-
-            // 데이터 저장하기
-            Save(workType, items);
-        }
-
-        // 데이터 크롤링하기
-        private List<DbItemBase> Select(WorkType workType)
-        {
-            List<DbItemBase> items = null;
-            var CrawlerMgr = new Crawler.Manager();
-            if (workType == WorkType.Player_W)
-            {
-                items = CrawlerMgr.GetPlayer_W();
-            }
-            else if(workType == WorkType.Player)
-            {
-                items = CrawlerMgr.GetPlayer();
-            }
-            return items;
-        }
-
-        // 데이터 저장하기
-        private void Save(WorkType workType, List<DbItemBase> items)
-        {
-            if(items == null) { return; }
-
-            DatabaseManager dbMgr = new DatabaseManager();
-
             if(workType == WorkType.Player_W)
             {
-                dbMgr.DataContext.ExecuteCommand("TRUNCATE TABLE Player_W");
+                return CreateTasks_PlayerW();
             }
-            else if(workType == WorkType.Player)
+            if (workType == WorkType.Player)
             {
-                dbMgr.DataContext.ExecuteCommand("TRUNCATE TABLE Player");
+                return CreateTasks_Player();
             }
-
-            dbMgr.Save(items);
+            if (workType == WorkType.Schedule)
+            {
+                return CreateTasks_Schedule();
+            }
+            if (workType == WorkType.Situation)
+            {
+                return CreateTasks_Situation();
+            }
+            if (workType == WorkType.BoxScore)
+            {
+                return CreateTasks_BoxScore();
+            }
+            return null;
         }
 
+        #region PlayerW
+
+        // PlayerW Tasks 생성
+        private List<Task> CreateTasks_PlayerW()
+        {
+            DatabaseManager dbMgr = new DatabaseManager();
+            dbMgr.DataContext.ExecuteCommand("TRUNCATE TABLE Player_W");
+
+            List<Task> tasks = new List<Task>();
+            var itemGruop = SplitGroup(Util.Util.Teams, workCount);
+            foreach (var item in itemGruop)
+            {
+                tasks.Add(Task.Factory.StartNew(() => RunPlayerW(item)));
+            }
+            return tasks;
+        }
+
+        // PlayerW  작업
+        private void RunPlayerW(List<String> teams)
+        {
+            List<DbItemBase> player_Ws = new List<DbItemBase>();
+            DatabaseManager dbMgr = new DatabaseManager();
+            using (var crawlerMgr = new Crawler.Manager())
+            {
+                foreach (String team in teams)
+                {
+                    var items = crawlerMgr.GetPlayer_W(team);
+                    player_Ws = player_Ws.Concat(items).ToList();
+                }
+            }
+            dbMgr.Save(player_Ws);
+        }
+
+        // 전체작업을 작업 카운트에 따라서 분할
+        private List<List<String>> SplitGroup(String[] items, Int32 count)
+        {
+            List<List<String>> itemGroup = new List<List<String>>();
+            for(Int32 i = 0; i < count; ++i)
+            {
+                itemGroup.Add(new List<String>());
+            }
+
+            for(Int32 i = 0; i < items.Length; ++i)
+            {
+                Int32 mod = i % count;
+                itemGroup[mod].Add(items[i]);
+            }
+
+            return itemGroup;
+        }
+
+        #endregion
+
+        #region Player
+
+        // PlayerW Tasks 생성
+        private List<Task> CreateTasks_Player()
+        {
+            DatabaseManager dbMgr = new DatabaseManager();
+            dbMgr.DataContext.ExecuteCommand("TRUNCATE TABLE Player");
+
+            // 가져와야할 선수리스트 얻기
+            var player_Ws = dbMgr.SelectAll<Player_W>();
+            var itemGroup = SplitGroup(player_Ws.ToList(), workCount);
+            List<Task> tasks = new List<Task>();
+            foreach (var items in itemGroup)
+            {
+                tasks.Add(Task.Factory.StartNew(() => RunPlayer(items)));
+            }
+            return tasks;
+        }
+
+        // PlayerW  작업
+        private void RunPlayer(List<Player_W> items)
+        {
+            List<DbItemBase> player_Ws = new List<DbItemBase>();
+            DatabaseManager dbMgr = new DatabaseManager();
+            using (var crawlerMgr = new Crawler.Manager())
+            {
+                foreach (var item in items)
+                {
+                    player_Ws.Add(crawlerMgr.GetPlayer(item));
+                }
+            }
+            dbMgr.Save(player_Ws);
+        }
+
+        // 전체작업을 작업 카운트에 따라서 분할
+        private List<List<Player_W>> SplitGroup(List<Player_W> items, Int32 count)
+        {
+            List<List<Player_W>> itemGroup = new List<List<Player_W>>();
+            for (Int32 i = 0; i < count; ++i)
+            {
+                itemGroup.Add(new List<Player_W>());
+            }
+
+            for (Int32 i = 0; i < items.Count; ++i)
+            {
+                Int32 mod = i % count;
+                itemGroup[mod].Add(items[i]);
+            }
+
+            return itemGroup;
+        }
+
+        #endregion
+
+        #region Schedule
+
+        // PlayerW Tasks 생성
+        private List<Task> CreateTasks_Schedule()
+        {
+            DatabaseManager dbMgr = new DatabaseManager();
+
+            // 일정불러오기 
+            var allSchedule = dbMgr.SelectAll<Schedule>();
+            Int32 startYear = 2013;
+            Int32 startMonth = 3;
+
+            if (allSchedule.Count() > 0)
+            {
+                startYear = (from schedule in allSchedule select schedule.Year).Max();
+                startMonth = (from schedule in allSchedule where schedule.Year == startYear select schedule.Month).Max();
+            }
+
+            DateTime startDate = new DateTime(startYear, startMonth, 1);
+            DateTime endDate = DateTime.Now;
+
+            // 이전 데이터 지우기
+            var scheduleTable = dbMgr.DataContext.GetTable<Schedule>();
+            var delSchedule = from schedule in allSchedule
+                              where schedule.Year == startDate.Year && schedule.Month >= startDate.Month
+                              select schedule;
+
+            foreach (var schedule in delSchedule)
+            {
+                scheduleTable.DeleteOnSubmit(schedule);
+            }
+            dbMgr.DataContext.SubmitChanges();
+
+            // 가지고와야할 리스트 만들기
+            List<DateTime> dateTimes = new List<DateTime>();
+            while (startDate <= endDate)
+            {
+                dateTimes.Add(startDate);
+                startDate = startDate.AddMonths(1);
+            }
+
+            // 가져와야할 스케줄 DateTime 얻기
+            var itemGroup = SplitGroup(dateTimes, workCount);
+            List<Task> tasks = new List<Task>();
+            foreach (var items in itemGroup)
+            {
+                tasks.Add(Task.Factory.StartNew(() => RunSchedule(items)));
+            }
+            return tasks;
+        }
+
+        // PlayerW  작업
+        private void RunSchedule(List<DateTime> items)
+        {
+            List<DbItemBase> schedules = new List<DbItemBase>();
+            DatabaseManager dbMgr = new DatabaseManager();
+            using (var crawlerMgr = new Crawler.Manager())
+            {
+                foreach (var item in items)
+                {
+                    var tSchedules = crawlerMgr.GetSchedule(item.Year, item.Month);
+                    schedules = schedules.Concat(tSchedules).ToList();
+                }
+            }
+            dbMgr.Save(schedules);
+        }
+
+        // 전체작업을 작업 카운트에 따라서 분할
+        private List<List<DateTime>> SplitGroup(List<DateTime> items, Int32 count)
+        {
+            List<List<DateTime>> itemGroup = new List<List<DateTime>>();
+            for (Int32 i = 0; i < count; ++i)
+            {
+                itemGroup.Add(new List<DateTime>());
+            }
+
+            for (Int32 i = 0; i < items.Count; ++i)
+            {
+                Int32 mod = i % count;
+                itemGroup[mod].Add(items[i]);
+            }
+
+            return itemGroup;
+        }
+
+        #endregion
+
+        #region Situation
+
+        // PlayerW Tasks 생성
+        private List<Task> CreateTasks_Situation()
+        {
+            DatabaseManager dbMgr = new DatabaseManager();
+
+            // 불러와야할 스케줄 가져오기
+            var schedules = from schedule in dbMgr.SelectAll<Schedule>()
+                            join situation in dbMgr.SelectAll<Situation_W>()
+                            on schedule.GameId equals situation.GameId into t
+                            from subSituation in t.DefaultIfEmpty()
+                            where schedule.LeagueId == 1 && schedule.SeriesId == 0
+                            && schedule.Href != null && subSituation.Content == null
+                            select schedule;
+
+            // 작업그룹 만들기 
+            var itemGroup = SplitGroup(schedules.ToList(), workCount);
+
+            // 작업
+            List<Task> tasks = new List<Task>();
+            foreach (var items in itemGroup)
+            {
+                tasks.Add(Task.Factory.StartNew(() => RunSchedule(items)));
+            }
+            return tasks;
+        }
+
+        // PlayerW  작업
+        private void RunSchedule(List<Schedule> items)
+        {
+            List<DbItemBase> situations = new List<DbItemBase>();
+            DatabaseManager dbMgr = new DatabaseManager();
+            using (var crawlerMgr = new Crawler.Manager())
+            {
+                foreach (var item in items)
+                {
+                    var situation = crawlerMgr.GetSituation(item);
+                    if (situation != null)
+                    {
+                        situations.Add(situation);
+                    }
+                }
+            }
+            dbMgr.Save(situations);
+        }
+
+        // 전체작업을 작업 카운트에 따라서 분할
+        private List<List<Schedule>> SplitGroup(List<Schedule> items, Int32 count)
+        {
+            List<List<Schedule>> itemGroup = new List<List<Schedule>>();
+            for (Int32 i = 0; i < count; ++i)
+            {
+                itemGroup.Add(new List<Schedule>());
+            }
+
+            for (Int32 i = 0; i < items.Count; ++i)
+            {
+                Int32 mod = i % count;
+                itemGroup[mod].Add(items[i]);
+            }
+
+            return itemGroup;
+        }
+
+        #endregion
+
+        #region Situation
+
+        // BoxScore Tasks 생성
+        private List<Task> CreateTasks_BoxScore()
+        {
+            DatabaseManager dbMgr = new DatabaseManager();
+
+            // 불러와야할 스케줄 가져오기
+            var schedules = from schedule in dbMgr.SelectAll<Schedule>()
+                            join boxScore in dbMgr.SelectAll<BoxScore_W>()
+                            on schedule.GameId equals boxScore.GameId into t
+                            from subBoxScore in t.DefaultIfEmpty()
+                            where schedule.LeagueId == 1 && schedule.SeriesId == 0
+                            && schedule.Href != null && subBoxScore.AwayHitter == null
+                            select schedule;
+
+            // 작업그룹 만들기 
+            var itemGroup = SplitGroup(schedules.ToList(), 3);
+
+            // 작업
+            List<Task> tasks = new List<Task>();
+            foreach (var items in itemGroup)
+            {
+                tasks.Add(Task.Factory.StartNew(() => RunBoxScore(items)));
+            }
+            return tasks;
+        }
+
+        // PlayerW  작업
+        private void RunBoxScore(List<Schedule> items)
+        {
+            List<DbItemBase> boxScores = new List<DbItemBase>();
+            DatabaseManager dbMgr = new DatabaseManager();
+            using (var crawlerMgr = new Crawler.Manager())
+            {
+                foreach (var item in items)
+                {
+                    var boxScore = crawlerMgr.GetBoxScore(item);
+                    if (boxScore != null)
+                    {
+                        boxScores.Add(boxScore);
+                    }
+                }
+            }
+            dbMgr.Save(boxScores);
+        }
+
+        #endregion
         #endregion
     }
 }
