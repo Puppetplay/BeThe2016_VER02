@@ -74,6 +74,8 @@ namespace BeThe.Worker
             return null;
         }
 
+        #region Crawler
+
         #region PlayerW
 
         // PlayerW Tasks 생성
@@ -335,7 +337,7 @@ namespace BeThe.Worker
 
         #endregion
 
-        #region Situation
+        #region BoxScore
 
         // BoxScore Tasks 생성
         private List<Task> CreateTasks_BoxScore()
@@ -383,6 +385,17 @@ namespace BeThe.Worker
         }
 
         #endregion
+
         #endregion
-    }
+
+        #region Maker
+
+        #endregion
+
+        private void MakeMatch()
+        {
+        }
+
+        #endregion
+        }
 }
