@@ -24,16 +24,16 @@ namespace BeThe.Worker
         public async Task Run(WorkType workType)
         {
             var tasks = CreateTaskTasks(workType);
-            if(tasks == null)
+            if (tasks == null)
             {
                 return;
             }
 
-            foreach(var task in tasks)
+            foreach (var task in tasks)
             {
                 await task;
             }
-        }                
+        }
 
         // 테스트함수
         public void RunTest()
@@ -51,7 +51,7 @@ namespace BeThe.Worker
         // Task 를 생성한다.
         private List<Task> CreateTaskTasks(WorkType workType)
         {
-            if(workType == WorkType.Player_W)
+            if (workType == WorkType.Player_W)
             {
                 return CreateTasks_PlayerW();
             }
@@ -70,6 +70,10 @@ namespace BeThe.Worker
             if (workType == WorkType.BoxScore)
             {
                 return CreateTasks_BoxScore();
+            }
+            if (workType == WorkType.MakeMatch)
+            {
+                return CreateTasks_MakeMatch();
             }
             return null;
         }
@@ -113,12 +117,12 @@ namespace BeThe.Worker
         private List<List<String>> SplitGroup(String[] items, Int32 count)
         {
             List<List<String>> itemGroup = new List<List<String>>();
-            for(Int32 i = 0; i < count; ++i)
+            for (Int32 i = 0; i < count; ++i)
             {
                 itemGroup.Add(new List<String>());
             }
 
-            for(Int32 i = 0; i < items.Length; ++i)
+            for (Int32 i = 0; i < items.Length; ++i)
             {
                 Int32 mod = i % count;
                 itemGroup[mod].Add(items[i]);
@@ -392,10 +396,88 @@ namespace BeThe.Worker
 
         #endregion
 
+        // PlayerW Tasks 생성
+        private List<Task> CreateTasks_MakeMatch()
+        {
+            List<Task> tasks = new List<Task>();
+            tasks.Add(Task.Factory.StartNew(() => MakeMatch()));
+            return tasks;
+        }
+
         private void MakeMatch()
         {
+            DataMaker.Manager mgr = new DataMaker.Manager();
+            Util.DatabaseManager dbMgr = new Util.DatabaseManager();
+            var schedules = from schedule in dbMgr.SelectAll<Schedule>()
+                            join match in dbMgr.SelectAll<Match>()
+                            on schedule.GameId equals match.GameId into t
+                            from subMatch in t.DefaultIfEmpty()
+                            where schedule.LeagueId == 1 && schedule.SeriesId == 0
+                            && schedule.Href != null && subMatch.GameId == null
+                            select schedule;
+
+            foreach (var schedule in schedules)
+            {
+                dbMgr = new Util.DatabaseManager();
+                var situation = (from s in dbMgr.SelectAll<Situation_W>()
+                                 where s.GameId == schedule.GameId
+                                 select s).First();
+
+                var boxScore = (from b in dbMgr.SelectAll<BoxScore_W>()
+                                where b.GameId == schedule.GameId
+                                select b).First();
+
+                var match = mgr.MakeMatch(situation, boxScore);
+
+                // Match 저장
+                List<Match> matchs = new List<Match>();
+                matchs.Add(match);
+                dbMgr.Save<Match>(matchs);
+
+                // Th 저장
+                List<Th> ths = new List<Th>();
+                foreach (var th in match.Ths)
+                {
+                    th.MatchId = match.Id;
+                    ths.Add(th);
+                }
+                dbMgr.Save<Th>(ths);
+
+                // Bat 저장
+                List<Bat> bats = new List<Bat>();
+                foreach (var th in match.Ths)
+                {
+                    if (th.Bats != null)
+                    {
+                        foreach (var bat in th.Bats)
+                        {
+                            bat.ThId = th.Id;
+                            bats.Add(bat);
+                        }
+                    }
+                }
+                dbMgr.Save<Bat>(bats);
+
+                // Ball 저장
+                List<Ball> balls = new List<Ball>();
+                foreach (var th in match.Ths)
+                {
+                    if (th.Bats != null)
+                    {
+                        foreach (var bat in th.Bats)
+                        {
+                            foreach (var ball in bat.Balls)
+                            {
+                                ball.BatId = bat.Id;
+                                balls.Add(ball);
+                            }
+                        }
+                    }
+                }
+                dbMgr.Save<Ball>(balls);
+            }
         }
 
         #endregion
-        }
+    }
 }

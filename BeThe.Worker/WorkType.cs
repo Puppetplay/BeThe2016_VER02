@@ -13,6 +13,7 @@ namespace BeThe.Worker
         Player,
         Schedule,
         Situation,
-        BoxScore
+        BoxScore,
+        MakeMatch,
     }
 }

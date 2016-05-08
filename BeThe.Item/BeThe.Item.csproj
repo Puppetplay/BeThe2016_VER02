@@ -44,6 +44,10 @@
   <ItemGroup>
     <Compile Include="BoxScore\BoxScore_W.cs" />
     <Compile Include="DbItemBase.cs" />
+    <Compile Include="Game\Ball.cs" />
+    <Compile Include="Game\Bat.cs" />
+    <Compile Include="Game\Match.cs" />
+    <Compile Include="Game\Th.cs" />
     <Compile Include="Player\Player.cs" />
     <Compile Include="Player\Player_W.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

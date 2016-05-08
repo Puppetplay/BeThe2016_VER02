@@ -74,5 +74,10 @@ namespace BeThe
         {
             Run(WorkType.BoxScore);
         }
+
+        private void bt_MakeMatch_Click(object sender, RoutedEventArgs e)
+        {
+            Run(WorkType.MakeMatch);
+        }
     }
 }
