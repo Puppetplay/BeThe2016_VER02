@@ -111,3 +111,15 @@ CREATE TABLE Match
 	GameId					NCHAR(13)		NOT NULL,
 	InsertDateTime			DATETIME		DEFAULT			CURRENT_TIMESTAMP
 );
+
+DROP TABLE LineUp
+CREATE TABLE LineUp
+(
+	Id						BIGINT			NOT NULL		PRIMARY KEY	IDENTITY,
+	MatchId					BIGINT			NOT NULL,
+	AttackType				INT				NOT NULL,
+	PlayerId				INT				NOT NULL,
+	BatNumber				INT				NOT NULL,	
+	EntryType				INT				NOT NULL,
+	InsertDateTime			DATETIME		DEFAULT			CURRENT_TIMESTAMP
+);

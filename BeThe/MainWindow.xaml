@@ -14,6 +14,7 @@
             <Button x:Name="bt_Situatoin" Content="Situatoin" Margin="10,81,10,0" VerticalAlignment="Top" Click="bt_Situatoin_Click"  />
             <Button x:Name="bt_BoxScore" Content="BoxScore" Margin="10,106,10,0" VerticalAlignment="Top" Click="bt_BoxScore_Click"/>
             <Button x:Name="bt_MakeMatch" Content="MakeMatch" Margin="10,131,10,0" VerticalAlignment="Top" Click="bt_MakeMatch_Click" />
+            <Button x:Name="bt_LineUp" Content="LineUp" Margin="10,156,10,0" VerticalAlignment="Top" Click="bt_LineUp_Click" />
         </Grid>
     </Grid>
 </Window>

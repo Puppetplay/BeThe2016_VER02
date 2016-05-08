@@ -79,5 +79,10 @@ namespace BeThe
         {
             Run(WorkType.MakeMatch);
         }
+
+        private void bt_LineUp_Click(object sender, RoutedEventArgs e)
+        {
+            Run(WorkType.LineUp);
+        }
     }
 }

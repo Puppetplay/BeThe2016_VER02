@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeThe.Crawler", "BeThe.Craw
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeThe.DataMaker", "BeThe.DataMaker\BeThe.DataMaker.csproj", "{DACBE526-CC6D-4A08-97C8-BAF950205534}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeThe.DataAnalyzer", "BeThe.DataAnalyzer\BeThe.DataAnalyzer.csproj", "{6556769C-840E-4476-A6E6-A25A409183E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestForm", "TestForm\TestForm.csproj", "{E29DBF42-35C5-4570-A33B-BA8A5934D8C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{DACBE526-CC6D-4A08-97C8-BAF950205534}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DACBE526-CC6D-4A08-97C8-BAF950205534}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DACBE526-CC6D-4A08-97C8-BAF950205534}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6556769C-840E-4476-A6E6-A25A409183E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6556769C-840E-4476-A6E6-A25A409183E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6556769C-840E-4476-A6E6-A25A409183E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6556769C-840E-4476-A6E6-A25A409183E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E29DBF42-35C5-4570-A33B-BA8A5934D8C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E29DBF42-35C5-4570-A33B-BA8A5934D8C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E29DBF42-35C5-4570-A33B-BA8A5934D8C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E29DBF42-35C5-4570-A33B-BA8A5934D8C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

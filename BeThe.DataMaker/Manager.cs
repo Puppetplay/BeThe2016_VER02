@@ -32,6 +32,14 @@ namespace BeThe.DataMaker
             return match;
         }
 
+        public List<LineUp> MakeLineUp(Int64 matchId, BoxScore_W boxScore)
+        {
+            MatchInfo matchInfo = new MatchInfo();
+            var homeLineUp = GetLineUp(matchId, boxScore.HomeHitter, AttackType.Home);
+            var awayLineUp = GetLineUp(matchId, boxScore.AwayHitter, AttackType.Away);
+            return homeLineUp.Concat(awayLineUp).ToList();
+        }
+
         #endregion
 
         #region Private Functions
@@ -363,6 +371,53 @@ namespace BeThe.DataMaker
             }
 
             return HitterInfos;
+        }
+
+        // 라인업 얻어오기
+        private List<LineUp> GetLineUp(Int64 matchId, String content, AttackType attackType)
+        {
+            List<LineUp> lineUps = new List<LineUp>();
+            Int32 number = 0;
+            List<HitterInfo> HitterInfos = new List<HitterInfo>();
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(content);
+            var nodes = doc.DocumentNode.SelectSingleNode("//tbody").SelectNodes("tr");
+
+            foreach (var node in nodes)
+            {
+                HtmlDocument hitterDoc = new HtmlDocument();
+                hitterDoc.LoadHtml(node.OuterHtml);
+
+                // Player ID 얻어오기
+                String href = hitterDoc.DocumentNode.SelectSingleNode("//a").GetAttributeValue("href", "");
+                String[] items = href.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+                LineUp lineUp = new LineUp();
+                lineUp.PlayerId = Convert.ToInt32(items[1]);
+
+                if (lineUps.Exists(x => x.PlayerId == lineUp.Id))
+                {
+                    // 이미 추가된아이면 무시
+                    continue;
+                }
+
+                String position = hitterDoc.DocumentNode.SelectSingleNode("//td [@class='frst']").InnerHtml;
+                if (position != "교")
+                {
+                    number++;
+                    lineUp.EntryType = EntryType.Starting;
+                }
+                else
+                {
+                    lineUp.EntryType = EntryType.Change;
+                }
+                lineUp.BatNumber = number;
+                lineUp.AttackType = attackType;
+                lineUp.MatchId = matchId;
+                lineUps.Add(lineUp);
+            }
+
+            return lineUps;
         }
 
         #endregion

@@ -75,6 +75,10 @@ namespace BeThe.Worker
             {
                 return CreateTasks_MakeMatch();
             }
+            if (workType == WorkType.LineUp)
+            {
+                return CreateTasks_LineUp();
+            }
             return null;
         }
 
@@ -396,7 +400,7 @@ namespace BeThe.Worker
 
         #endregion
 
-        // PlayerW Tasks 생성
+        // MakeMath 생성
         private List<Task> CreateTasks_MakeMatch()
         {
             List<Task> tasks = new List<Task>();
@@ -477,6 +481,43 @@ namespace BeThe.Worker
                 dbMgr.Save<Ball>(balls);
             }
         }
+
+        // LineUp Tasks 생성
+        private List<Task> CreateTasks_LineUp()
+        {
+            List<Task> tasks = new List<Task>();
+            tasks.Add(Task.Factory.StartNew(() => MakeLineUp()));
+            return tasks;
+        }
+
+        private void MakeLineUp()
+        {
+            DataMaker.Manager mgr = new DataMaker.Manager();
+            try
+            {
+                Util.DatabaseManager dbMgr = new Util.DatabaseManager();
+
+                var matches = from match in dbMgr.SelectAll<Match>()
+                              join lineUp in dbMgr.SelectAll<LineUp>()
+                              on match.Id equals lineUp.Id into t
+                              from subLineUp in t.DefaultIfEmpty()
+                              where subLineUp == null
+                              select match;
+
+                foreach (var match in matches)
+                {
+                    var boxScore = (from b in dbMgr.SelectAll<BoxScore_W>()
+                                    where b.GameId == match.GameId
+                                    select b).First();
+                    var lineUps = mgr.MakeLineUp(match.Id, boxScore);
+                    dbMgr.Save<LineUp>(lineUps);
+                }
+            }
+            finally
+            {
+            }
+        }
+
 
         #endregion
     }

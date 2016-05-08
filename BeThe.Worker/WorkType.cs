@@ -15,5 +15,6 @@ namespace BeThe.Worker
         Situation,
         BoxScore,
         MakeMatch,
+        LineUp,
     }
 }

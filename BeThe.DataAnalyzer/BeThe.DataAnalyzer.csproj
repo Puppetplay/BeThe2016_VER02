@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FF158B8B-7EBE-4556-B7FE-4EB783E824B3}</ProjectGuid>
+    <ProjectGuid>{6556769C-840E-4476-A6E6-A25A409183E6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BeThe.Item</RootNamespace>
-    <AssemblyName>BeThe.Item</AssemblyName>
+    <RootNamespace>BeThe.DataAnalyzer</RootNamespace>
+    <AssemblyName>BeThe.DataAnalyzer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,7 +32,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,22 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoxScore\BoxScore_W.cs" />
-    <Compile Include="DbItemBase.cs" />
-    <Compile Include="Game\Ball.cs" />
-    <Compile Include="Game\Bat.cs" />
-    <Compile Include="Game\Match.cs" />
-    <Compile Include="Game\Th.cs" />
-    <Compile Include="LineUp\LineUp.cs" />
-    <Compile Include="Player\Player.cs" />
-    <Compile Include="Player\Player_W.cs" />
+    <Compile Include="item\PitcherInfo.cs" />
+    <Compile Include="Manager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Schedule\Schedule.cs" />
-    <Compile Include="Schedule\Schedule_W.cs" />
-    <Compile Include="Situation\Situation_W.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ItemScript.sql" />
+    <ProjectReference Include="..\BeThe.Item\BeThe.Item.csproj">
+      <Project>{ff158b8b-7ebe-4556-b7fe-4eb783e824b3}</Project>
+      <Name>BeThe.Item</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BeThe.Util\BeThe.Util.csproj">
+      <Project>{80f639a3-96d5-48a5-9680-ee578b24caa5}</Project>
+      <Name>BeThe.Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
