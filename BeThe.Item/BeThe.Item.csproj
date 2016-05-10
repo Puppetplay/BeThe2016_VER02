@@ -49,6 +49,7 @@
     <Compile Include="Game\Match.cs" />
     <Compile Include="Game\Th.cs" />
     <Compile Include="LineUp\LineUp.cs" />
+    <Compile Include="Pick\SPitcher.cs" />
     <Compile Include="Player\Player.cs" />
     <Compile Include="Player\Player_W.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

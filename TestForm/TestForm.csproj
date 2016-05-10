@@ -51,10 +51,19 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form타자분석.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form타자분석.Designer.cs">
+      <DependentUpon>Form타자분석.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form타자분석.resx">
+      <DependentUpon>Form타자분석.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -82,6 +91,10 @@
     <ProjectReference Include="..\BeThe.DataAnalyzer\BeThe.DataAnalyzer.csproj">
       <Project>{6556769c-840e-4476-a6e6-a25a409183e6}</Project>
       <Name>BeThe.DataAnalyzer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BeThe.Item\BeThe.Item.csproj">
+      <Project>{ff158b8b-7ebe-4556-b7fe-4eb783e824b3}</Project>
+      <Name>BeThe.Item</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

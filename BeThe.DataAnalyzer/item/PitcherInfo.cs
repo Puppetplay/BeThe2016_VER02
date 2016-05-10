@@ -4,7 +4,7 @@
 
 using System;
 
-namespace BeThe.DataAnalyzer.item
+namespace BeThe.DataAnalyzer
 {
     public class PitcherInfo
     {

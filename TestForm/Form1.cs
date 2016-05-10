@@ -21,7 +21,7 @@ namespace TestForm
         {
             Int32 playerId = Convert.ToInt32(textBox1.Text);
             BeThe.DataAnalyzer.Manager mgr = new BeThe.DataAnalyzer.Manager();
-            var pitcherInfo = mgr.GetPitcherInfo(playerId, 1);
+            var pitcherInfo = mgr.GetPitcherInfo(playerId, 4);
 
             textBox2.Text = pitcherInfo.OnBaseRatio.ToString();
             textBox3.Text = pitcherInfo.HitRatio.ToString();

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace TestForm
+namespace Simulator
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace TestForm
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form타자분석());
+            Application.Run(new Form1());
         }
     }
 }

@@ -167,9 +167,9 @@ namespace BeThe.Crawler
 
         #endregion
 
-        #region Situation
+        #region BoxScore
 
-        // Situation 정보 얻기
+        // BoxScore 정보 얻기
         public DbItemBase GetBoxScore(Schedule schedule)
         {
             Int32 errorCount = 0;
@@ -177,9 +177,7 @@ namespace BeThe.Crawler
             {
                 try
                 {
-                    List<DbItemBase> schedules = new List<DbItemBase>();
                     chromeDriver = InitCromeDriver();
-
                     CrawlerBoxScore crawler = new CrawlerBoxScore(chromeDriver);
                     crawler.Init(schedule);
                     String html = crawler.GetHTML();

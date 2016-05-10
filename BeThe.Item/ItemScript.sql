@@ -67,6 +67,18 @@ CREATE TABLE Situation_W
 	InsertDateTime			DATETIME		DEFAULT			CURRENT_TIMESTAMP
 );
 
+DROP TABLE BoxScore_W
+CREATE TABLE BoxScore_W
+(
+	Id						BIGINT			NOT NULL		PRIMARY KEY	IDENTITY,
+	GameId					NCHAR(13)		NOT NULL,
+	AwayHitter				TEXT			NOT NULL,
+	HomeHitter				TEXT			NOT NULL,
+	AwayPitcher				TEXT			NOT NULL,
+	HomePitcher				TEXT			NOT NULL,
+	InsertDateTime			DATETIME		DEFAULT			CURRENT_TIMESTAMP
+)
+
 DROP TABLE Ball
 CREATE TABLE Ball
 (
