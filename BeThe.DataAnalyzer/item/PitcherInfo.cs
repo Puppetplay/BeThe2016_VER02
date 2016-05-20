@@ -8,6 +8,13 @@ namespace BeThe.DataAnalyzer
 {
     public class PitcherInfo
     {
+        // 투수의 플레이어 아이디
+        public Int32 PlayerId { get; set; }
+
+        public String PlayerName { get; set; }
+
+        public String Hand { get; set; }
+
         // 상대타자의 출루율
         public Double OnBaseRatio { get; set; }
 

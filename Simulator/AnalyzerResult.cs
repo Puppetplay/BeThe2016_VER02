@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Simulator
 {
-    class AnalyzerResult
+    public class AnalyzerData
     {
         public String TeamName { get; set; }
         public PitcherInfo PitcherInfo { get; set; }

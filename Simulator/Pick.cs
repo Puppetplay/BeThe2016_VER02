@@ -8,7 +8,7 @@ namespace Simulator
 {
     class Pick
     {
-        Int32 PlayerId { get; set; }
-        Int32 PlayerName { get; set; }
+        public Int32 PlayerId { get; set; }
+        public String PlayerName { get; set; }
     }
 }

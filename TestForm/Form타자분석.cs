@@ -53,11 +53,11 @@ namespace TestForm
 
         private void button5_Click(object sender, EventArgs e)
         {
-            var teamInitial = textBox2.Text;
-            Int32 playerId = Convert.ToInt32(textBox3.Text);
-            BeThe.DataAnalyzer.Manager mgr = new BeThe.DataAnalyzer.Manager();
-            var s = mgr.IsLongHitLastGame(teamInitial, playerId);
-            MessageBox.Show(s.ToString());
+            //var teamInitial = textBox2.Text;
+            //Int32 playerId = Convert.ToInt32(textBox3.Text);
+            //BeThe.DataAnalyzer.Manager mgr = new BeThe.DataAnalyzer.Manager();
+            //var s = mgr.IsLongHitLastGame(teamInitial, playerId);
+            //MessageBox.Show(s.ToString());
         }
     }
 }

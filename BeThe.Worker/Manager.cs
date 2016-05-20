@@ -499,7 +499,7 @@ namespace BeThe.Worker
 
                 var matches = from match in dbMgr.SelectAll<Match>()
                               join lineUp in dbMgr.SelectAll<LineUp>()
-                              on match.Id equals lineUp.Id into t
+                              on match.Id equals lineUp.MatchId into t
                               from subLineUp in t.DefaultIfEmpty()
                               where subLineUp == null
                               select match;
