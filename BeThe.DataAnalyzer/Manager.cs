@@ -20,6 +20,7 @@ namespace BeThe.DataAnalyzer
         IQueryable<Schedule> schedules;
         IQueryable<Th> ths;
         IQueryable<Bat> bats;
+        IQueryable<Ball> balls;
         IQueryable<LineUp> lineUps;
 
         public Manager()
@@ -31,6 +32,7 @@ namespace BeThe.DataAnalyzer
             schedules = dbMgr.SelectAll<Schedule>();
             ths = dbMgr.SelectAll<Th>();
             bats = dbMgr.SelectAll<Bat>();
+            balls = dbMgr.SelectAll<Ball>();
             lineUps = dbMgr.SelectAll<LineUp>();
         }
 
@@ -122,6 +124,57 @@ namespace BeThe.DataAnalyzer
             return pitcherInfo;
         }
 
+        // 투수력이 좋아서 픽 패스인지 구한다.
+        public Boolean IsQualityStart(Int32 playerId)
+        {
+            Int32 dateNumber = MaxDateTime.Year * 10000 + MaxDateTime.Month * 100 + MaxDateTime.Day;
+
+            // 투수가 출전한 경기를 가져온다.
+            var matchIds = (from m in matches
+                            join s in schedules
+                                on m.GameId equals s.GameId
+                            join t in ths
+                                on m.Id equals t.MatchId
+                            join b in bats
+                                on t.Id equals b.ThId
+                            where
+                                t.Number == 1 &&
+                                s.Year * 10000 + s.Month * 100 + s.Day <
+                                dateNumber
+                            group t by new { m.Id, t.Number, b.PitcherId } into g
+                            where g.Key.PitcherId == playerId && g.Key.Number == 1
+                            select g.Key.Id);
+
+            var tMatches = (from m in matches
+                            where matchIds.Contains(m.Id)
+                            orderby m.GameId descending
+                            select m).Take(5);
+
+            var tBats = from m in tMatches
+                        join t in ths
+                        on m.Id equals t.MatchId
+                        join b in bats
+                        on t.Id equals b.ThId
+                        select b;
+
+            var hitCount = (from b in tBats
+                            where b.PResult == PResultType.Hit
+                            select b).Count();
+
+            var passCount = (from b in tBats
+                            where b.PResult == PResultType.Pass
+                            select b).Count();
+
+
+            // 피안타율
+            var hitRate = (Double)hitCount / tBats.Count();
+            var passRate = ((Double)hitCount + (Double)passCount) / tBats.Count();
+            if (hitRate > 0.25)
+            {
+                return false;
+            }
+            return true;
+        }
 
         // 팀별로 최근 N경기에 모두 선발 출장인 타자를 가지고 온다.
         public List<Player> GetStartPlayerForNDays(String teamInitial, Int32 days)
@@ -281,7 +334,7 @@ namespace BeThe.DataAnalyzer
             var tMatches = (from m in matches
                             join s in schedules
                             on m.GameId equals s.GameId
-                            where (s.HomeTeam == teamInitial || s.AwayTeam == teamInitial)
+                            where s.Year == 2016 && (s.HomeTeam == teamInitial || s.AwayTeam == teamInitial)
                             &&
                                 s.Year * 10000 + s.Month * 100 + s.Day <
                                 dateNumber
@@ -303,18 +356,30 @@ namespace BeThe.DataAnalyzer
                              g.Count(x => x.PResult == PResultType.Pass))
                          )).First();
 
-            // 모든경기에 안타가 있는지 확인
-            var aa = (from m in tMatches
-                      join t in ths
-                          on m.Id equals t.MatchId
-                      join b in bats
-                          on t.Id equals b.ThId
-                      where b.HitterId == playerId
-                      group b by b into g
-                      select new
-                      {
-                          a = g.Count(x => x.PResult == PResultType.Hit) * 1.0
-                      });
+            var tBats1 = (from m in tMatches
+                          join t in ths
+                              on m.Id equals t.MatchId
+                          join b in bats
+                              on t.Id equals b.ThId
+                          where b.HitterId == playerId
+                          select b).Count();
+
+            var tBats2 = (from m in tMatches
+                          join t in ths
+                              on m.Id equals t.MatchId
+                          join b in bats
+                              on t.Id equals b.ThId
+                          where b.HitterId == playerId && b.PResult == PResultType.Hit
+                          select b).Count();
+
+            var tBats3 = (from m in tMatches
+                          join t in ths
+                              on m.Id equals t.MatchId
+                          join b in bats
+                              on t.Id equals b.ThId
+                          where b.HitterId == playerId && b.PResult == PResultType.Pass
+                          select b).Count();
+
 
             return tBats;
         }
@@ -421,5 +486,6 @@ namespace BeThe.DataAnalyzer
             }
             catch { return ""; }
         }
+
     }
 }

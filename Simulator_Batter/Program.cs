@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BeThe.Pick
+namespace Simulator_Batter
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace BeThe.Pick
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Form_타자별분석());
         }
     }
 }

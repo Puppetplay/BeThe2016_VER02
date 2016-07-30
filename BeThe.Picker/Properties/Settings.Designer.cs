@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BeThe.Pick.Properties
+namespace BeThe.Picker.Properties
 {
 
 
