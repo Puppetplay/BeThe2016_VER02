@@ -29,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeThe.Picker", "BeThe.Picke
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PickSimulator", "PickSimulator\PickSimulator.csproj", "{20F88357-BEE5-4252-817F-6E021CDACE2E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator_2016", "Simulator_2016후반기\Simulator_2016.csproj", "{496F6554-2587-4764-84BB-DF14681E85E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator_2016_Pitcter", "Simulator_2016_Pitcher\Simulator_2016_Pitcter.csproj", "{2E428FCC-4216-44AA-BEE4-E1E11C0FCEBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +91,14 @@ Global
 		{20F88357-BEE5-4252-817F-6E021CDACE2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20F88357-BEE5-4252-817F-6E021CDACE2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20F88357-BEE5-4252-817F-6E021CDACE2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{496F6554-2587-4764-84BB-DF14681E85E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{496F6554-2587-4764-84BB-DF14681E85E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{496F6554-2587-4764-84BB-DF14681E85E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{496F6554-2587-4764-84BB-DF14681E85E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E428FCC-4216-44AA-BEE4-E1E11C0FCEBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E428FCC-4216-44AA-BEE4-E1E11C0FCEBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E428FCC-4216-44AA-BEE4-E1E11C0FCEBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E428FCC-4216-44AA-BEE4-E1E11C0FCEBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

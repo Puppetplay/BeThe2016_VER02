@@ -487,5 +487,127 @@ namespace BeThe.DataAnalyzer
             catch { return ""; }
         }
 
+
+        #region 2016년 후반기 로직
+
+        // 타석수 구하기
+        public Int32 GetPA(String teamInitial, Int32 playerId)
+        {
+            Int32 dateNumber = MaxDateTime.Year * 10000 + MaxDateTime.Month * 100 + MaxDateTime.Day;
+
+            // 입력된 팀의 최근 n경기를 가지고 온다.
+            var tMatches = (from m in matches
+                            join s in schedules
+                            on m.GameId equals s.GameId
+                            where s.Year == 2016 && (s.HomeTeam == teamInitial || s.AwayTeam == teamInitial)
+                            &&
+                                s.Year * 10000 + s.Month * 100 + s.Day <
+                                dateNumber
+                            orderby m.GameId descending
+                            select m).ToList();
+
+            // 타석구하기
+            var pa = (from m in tMatches
+                         join t in ths
+                             on m.Id equals t.MatchId
+                         join b in bats
+                             on t.Id equals b.ThId
+                         where b.HitterId == playerId
+                         select b).Count();
+
+            return pa;
+        }
+
+        // 타석수 구하기
+        public Int32 GetHitCout(String teamInitial, Int32 playerId)
+        {
+            Int32 dateNumber = MaxDateTime.Year * 10000 + MaxDateTime.Month * 100 + MaxDateTime.Day;
+
+            // 입력된 팀의 최근 n경기를 가지고 온다.
+            var tMatches = (from m in matches
+                            join s in schedules
+                            on m.GameId equals s.GameId
+                            where s.Year == 2016 && (s.HomeTeam == teamInitial || s.AwayTeam == teamInitial)
+                            &&
+                                s.Year * 10000 + s.Month * 100 + s.Day <
+                                dateNumber
+                            orderby m.GameId descending
+                            select m).ToList();
+
+            // 타석구하기
+            var hitCount = (from m in tMatches
+                      join t in ths
+                          on m.Id equals t.MatchId
+                      join b in bats
+                          on t.Id equals b.ThId
+                      where b.HitterId == playerId
+                        && b.PResult == PResultType.Hit
+                      select b).Count();
+
+            return hitCount;
+        }
+
+        // 주어진 타자의 최근 N게임에서의 안타친 날을 구한다.
+        public Int32 GetHitDayCountForNDays(String teamInitial, Int32 playerId, Int32 days)
+        {
+            Int32 dateNumber = MaxDateTime.Year * 10000 + MaxDateTime.Month * 100 + MaxDateTime.Day;
+
+            // 입력된 팀의 최근 n경기를 가지고 온다.
+            var tMatches = (from m in matches
+                            join s in schedules
+                            on m.GameId equals s.GameId
+                            where (s.HomeTeam == teamInitial || s.AwayTeam == teamInitial)
+                            &&
+                                s.Year * 10000 + s.Month * 100 + s.Day <
+                                dateNumber
+                            orderby m.GameId descending
+                            select m).Take(days);
+
+            // 타자의 안타수를 구한다.
+            var hitDayCount = from m in tMatches
+                              join t in ths
+                                  on m.Id equals t.MatchId
+                              join b in bats
+                                  on t.Id equals b.ThId
+                              where b.PResult == PResultType.Hit && b.HitterId == playerId
+                              group m by m.Id into g
+                              select g;
+
+            return hitDayCount.Count();
+        }
+
+        // 팀별로 최근 N경기에 M번이상 선발 출장인 타자를 가지고 온다.
+        public List<Player> GetPlayersStartingGame(String teamInitial, Int32 GameCount, Int32 StartingCount)
+        {
+            Int32 dateNumber = MaxDateTime.Year * 10000 + MaxDateTime.Month * 100 + MaxDateTime.Day;
+
+            // 입력된 팀의 최근 n경기를 가지고 온다.
+            var tMatches = (from m in matches
+                            join s in schedules
+                            on m.GameId equals s.GameId
+                            where (s.HomeTeam == teamInitial || s.AwayTeam == teamInitial)
+                            &&
+                                s.Year * 10000 + s.Month * 100 + s.Day <
+                                dateNumber
+                            orderby m.GameId descending
+                            select m).Take(GameCount);
+
+            // 모든경기에 스타팅 멤버로 출전한 타자를 가지고 온다.
+            var tPlayers = from m in tMatches
+                           join l in lineUps
+                           on m.Id equals l.MatchId
+                           join p in players
+                           on l.PlayerId equals p.PlayerId
+                           where l.EntryType == EntryType.Starting
+                           && p.Team == teamInitial
+                           group p by p.Id into g
+                           where g.Count() - 1 >= StartingCount
+                           select g.First();
+            return tPlayers.ToList();
+        }
+
+        #endregion
     }
 }
+
+
